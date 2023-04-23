@@ -21,7 +21,10 @@ async def on_message(message):
     username = str(message.author)
     channel = str(message.channel)
     user_message = str(message.content)
-    print(f"{username} said: {user_message} in {channel}")
+    if message.author == bot.user:
+        return
+    else:
+        print(f"{username} said: {user_message} in {channel}")
     if message.author == bot.user:
         return
     messageContent = message.content.lower()
