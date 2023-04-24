@@ -26,6 +26,7 @@ async def sync(ctx):
 
 @bot.event
 async def on_message(message):
+    '''
     username = str(message.author)
     channel = str(message.channel)
     user_message = str(message.content)
@@ -35,6 +36,7 @@ async def on_message(message):
         print(f"{username} said: {user_message} in {channel}")
     if message.author == bot.user:
         return
+    '''
     messageContent = message.content.lower()
 
     if messageContent == "hello":
@@ -53,32 +55,7 @@ async def on_message(message):
     else:
         return
     await bot.process_commands(message)
-'''
-@bot.event
-async def on_error(event, *args, **kwargs):
-    logging.error(traceback.format_exc())
 
-@bot.event
-async def on_command_error(ctx: commands.Context, error: Exception):
-    if isinstance(error, commands.MissingPermissions):
-        await ctx.send("```**You can't do that ;-;**```")
-        await ctx.message.delete()
-    elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("```**Please enter all the required arguments**```")
-        await ctx.message.delete()
-    elif isinstance(error, commands.MemberNotFound):
-        await ctx.send("```**Member not found, Please mention a valid user!**```")
-        await ctx.message.delete()
-    elif isinstance(error, commands.BotMissingPermissions):
-        await ctx.send("```**I don't have the permissions to do that!**```")
-        await ctx.message.delete()
-    elif isinstance(error, commands.MissingPermissions):
-        await ctx.send("```**I don't have the permissions to do that!**```")
-        await ctx.message.delete()
-
-    else:
-        raise error
-'''
 @bot.tree.command()
 async def dadjoke(interaction: discord.Interaction) -> None:
         async with aiohttp.ClientSession() as session:
@@ -109,11 +86,7 @@ async def coinflip(interaction: discord.Interaction) -> None:
 @bot.command()
 @commands.has_permissions(manage_messages=True)
 async def purge(ctx, *, amt):
-    try:
-        await ctx.channel.purge(limit=int(amt)+1)
-        print("error error")
-    except Exception as e:
-        print(e)
+    await ctx.channel.purge(limit=int(amt)+1)
     msg = await ctx.send(f"{amt} messages have been purged")
     await asyncio.sleep(3)
     await msg.delete()
