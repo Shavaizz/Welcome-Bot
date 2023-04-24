@@ -23,13 +23,6 @@ async def sync(ctx):
     bot.unload_extension("cogs.jokes")
     bot.load_extension("cogs.jokes")
     await ctx.send("Components synced successfully.")
-@bot.command()
-async def sync(ctx):
-    """Syncs the cogs and other components"""
-    await ctx.send("Syncing components...")
-    bot.unload_extension("cogs.jokes")
-    bot.load_extension("cogs.jokes")
-    await ctx.send("Components synced successfully.")
 
 @bot.event
 async def on_message(message):
