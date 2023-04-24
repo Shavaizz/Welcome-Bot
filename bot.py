@@ -114,9 +114,9 @@ async def purge(ctx, *, amt):
         print("error error")
     except Exception as e:
         print(e)
-  #  msg = await ctx.send(f"{amt} messages have been purged")
- #   await asyncio.sleep(3)
-#    await msg.delete()
+    msg = await ctx.send(f"{amt} messages have been purged")
+    await asyncio.sleep(3)
+    await msg.delete()
 
 @bot.event
 async def on_member_join(member: discord.Member):
