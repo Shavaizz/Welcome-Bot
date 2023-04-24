@@ -9,12 +9,18 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TOKEN = os.getenv('TOKEN')
-welcome_channel = os.getenv('welcome_channel')
 determine_flip = [1, 0]
 
 
 bot = commands.Bot(command_prefix=".", intents=discord.Intents.all())
 
+@bot.command()
+async def sync(ctx):
+    """Syncs the cogs and other components"""
+    await ctx.send("Syncing components...")
+    bot.unload_extension("cogs.jokes")
+    bot.load_extension("cogs.jokes")
+    await ctx.send("Components synced successfully.")
 
 @bot.event
 async def on_message(message):
@@ -54,7 +60,7 @@ async def on_message(message):
         await angr.delete()
     else:
         return
-
+    await bot.process_commands(message)
 
 @bot.event
 async def on_command_error(ctx: commands.Context, error: Exception):
@@ -107,20 +113,16 @@ async def coinflip(interaction: discord.Interaction) -> None:
 @bot.command()
 @commands.has_permissions(manage_messages=True)
 async def purge(ctx, *, amt):
-    try:
-        await ctx.channel.purge(limit=int(amt)+1)
-        msg = await ctx.send(f"{amt} messages have been purged")
-        await asyncio.sleep(3)
-        await msg.delete()
-    except Exception as e:
-        print(e)
-
+    await ctx.channel.purge(limit=int(amt)+1)
+    msg = await ctx.send(f"{amt} messages have been purged")
+    await asyncio.sleep(3)
+    await msg.delete()
 
 @bot.event
 async def on_member_join(member: discord.Member):
     try:
         channel = discord.utils.get(
-            member.guild.text_channels, name="welcome", topic="welcome channel")
+            member.guild.text_channels, name="welcome")
         embed = discord.Embed(
             description=f"Welcome To The Crew, {member.mention}",
             color=0xFF5555,
@@ -136,7 +138,6 @@ async def on_member_join(member: discord.Member):
 
 @bot.event
 async def on_ready():
-    await bot.tree.sync()
     print(f"{bot.user} is now running")
 
 bot.run(f"{TOKEN}")
