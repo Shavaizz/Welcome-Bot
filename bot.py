@@ -48,16 +48,6 @@ async def on_message(message):
         angr = await message.channel.send(f"{message.author.mention}, you can't say that")
         await asyncio.sleep(3)
         await angr.delete()
-    elif messageContent == "niggah":
-        await message.delete()
-        angr = await message.channel.send(f"{message.author.mention}, you can't say that")
-        await asyncio.sleep(3)
-        await angr.delete()
-    elif messageContent == "nigger":
-        await message.delete()
-        angr = await message.channel.send(f"{message.author.mention}, you can't say that")
-        await asyncio.sleep(3)
-        await angr.delete()
     else:
         return
     await bot.process_commands(message)
