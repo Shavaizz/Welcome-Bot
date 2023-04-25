@@ -24,9 +24,9 @@ async def sync(ctx):
     bot.load_extension("cogs.jokes")
     await ctx.send("Components synced successfully.")
 
-@bot.event
+@bot.listen()
 async def on_message(message):
-    '''
+    
     username = str(message.author)
     channel = str(message.channel)
     user_message = str(message.content)
@@ -36,7 +36,7 @@ async def on_message(message):
         print(f"{username} said: {user_message} in {channel}")
     if message.author == bot.user:
         return
-    '''
+    
     messageContent = message.content.lower()
 
     if messageContent == "hello":
@@ -47,15 +47,14 @@ async def on_message(message):
         await message.channel.send("What?")
     elif messageContent == "this bot sucks":
         await message.channel.send("No, you do")
-    elif messageContent == "fak":
-        await message.delete()
-        angr = await message.channel.send(f"{message.author.mention}, you can't say that")
-        await asyncio.sleep(3)
-        await angr.delete()
-    else:
-        return
-    await bot.process_commands(message)
-
+@bot.command()
+@commands.has_permissions(manage_messages=True)
+async def purge(ctx, *, amt):
+    await ctx.channel.purge(limit=int(amt)+1)
+    msg = await ctx.send(f"Purged, {amt} messages successfully")
+    await asyncio.sleep(3)
+    await msg.delete()
+  
 @bot.tree.command()
 async def dadjoke(interaction: discord.Interaction) -> None:
         async with aiohttp.ClientSession() as session:
@@ -68,46 +67,30 @@ async def joke(interaction: discord.Interaction) -> None:
             async with session.get('https://official-joke-api.appspot.com/random_joke') as resp:
                 data = await resp.json()
                 await interaction.response.send_message(f"{data['setup']}\n\n{data['punchline']}")
+
 @bot.tree.command()
 async def coinflip(interaction: discord.Interaction) -> None:
-    try:
-        if random.choice(determine_flip) == 1:
-            embed = discord.Embed(title="Coinflip | (Welcomer Bot)",
+    if random.choice(determine_flip) == 1:
+        embed = discord.Embed(title="Coinflip | (Welcomer Bot)",
                                   description=f"{interaction.user.mention} Flipped coin, we got **Heads**!")
-            await interaction.response.send_message(embed=embed)
-        else:
-            embed = discord.Embed(title="Coinflip | (Welcomer Bot)",
+        await interaction.response.send_message(embed=embed)
+    else:
+        embed = discord.Embed(title="Coinflip | (Welcomer Bot)",
                                   description=f"{interaction.user.mention} Flipped coin, we got **Tails**!")
-            await interaction.response.send_message(embed=embed)
-    except Exception as e:
-        print(e)
-
-
-@bot.command()
-@commands.has_permissions(manage_messages=True)
-async def purge(ctx, *, amt):
-    await ctx.channel.purge(limit=int(amt)+1)
-    msg = await ctx.send(f"{amt} messages have been purged")
-    await asyncio.sleep(3)
-    await msg.delete()
-
+        await interaction.response.send_message(embed=embed)
 @bot.event
 async def on_member_join(member: discord.Member):
-    try:
-        channel = discord.utils.get(
-            member.guild.text_channels, name="welcome")
-        embed = discord.Embed(
-            description=f"Welcome To The Crew, {member.mention}",
-            color=0xFF5555,
-            timestamp=formatted_date_time
+    channel = discord.utils.get(
+        member.guild.text_channels, name="welcome")
+    embed = discord.Embed(
+        description=f"Welcome To The Crew, {member.mention}",
+        color=0xFF5555,
+        timestamp=formatted_date_time
         )
-        role = discord.utils.get(member.guild.roles, name="Member")
-        await member.add_roles(role)
-        await channel.send(embed=embed)
-        print(f"{role}role given to memeber{member.mention}")
-    except Exception as e:
-        print(f"Exception :{e} and erorr was in member join")
-
+    role = discord.utils.get(member.guild.roles, name="Member")
+    await member.add_roles(role)
+    await channel.send(embed=embed)
+    print(f"{role}role given to memeber{member.mention}")
 
 @bot.event
 async def on_ready():
