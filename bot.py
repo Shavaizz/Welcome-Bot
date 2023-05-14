@@ -93,7 +93,7 @@ async def joke(interaction: discord.Interaction) -> None:
 async def coinflip(interaction: discord.Interaction) -> None:
     if random.choice(determine_flip) == 1:
         embed = discord.Embed(title="Coinflip | (Welcomer Bot)",
-                                  description=f"{interaction.user.mention} Flipped coin, we got **Heads**!")
+                                description=f"{interaction.user.mention} Flipped coin, we got **Heads**!")
         await interaction.response.send_message(embed=embed)
     else:
         embed = discord.Embed(title="Coinflip | (Welcomer Bot)",
