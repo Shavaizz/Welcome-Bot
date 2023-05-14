@@ -10,13 +10,10 @@ from typing import Optional, Literal
 from discord.ext.commands import Greedy
 from dotenv import load_dotenv
 load_dotenv()
-
-TOKEN = os.getenv('TOKEN')
+TOKEN = os.environ['TOKEN']
 determine_flip = [1, 0]
 now = datetime.datetime.now()
 formatted_date_time = now.strftime("%Y-%m-%d %H:%M:%S")
-
-
 bot = commands.Bot(command_prefix=".", intents=discord.Intents.all())
 
 @bot.command()
@@ -99,6 +96,13 @@ async def coinflip(interaction: discord.Interaction) -> None:
         embed = discord.Embed(title="Coinflip | (Welcomer Bot)",
                                   description=f"{interaction.user.mention} Flipped coin, we got **Tails**!")
         await interaction.response.send_message(embed=embed)
+@bot.tree.command(description='Throw a pie at someone')
+async def pie(interaction:discord.Interaction, member:discord.Member, message:str) -> None:
+  embed= discord.Embed(title=f"User:{member.name} Has a pie for you 🥧",
+                    description=f'{member.mention} says {message}',
+                    color=0xFF5555
+                        )
+  await interaction.response.send_message(embed=embed)
 @bot.event
 async def on_member_join(member: discord.Member):
     channel = discord.utils.get(
