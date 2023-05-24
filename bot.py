@@ -101,12 +101,14 @@ async def coinflip(interaction: discord.Interaction) -> None:
 @app_commands.default_permissions(manage_roles=True)
 async def verify(interaction:discord.Interaction,member:discord.Member,):
     role = discord.utils.get(member.guild.roles,name="Verified Member")
+    role2 = discord.utils.get(member.guild.roles,name="Unverified Member")
     embed=discord.Embed(
         title="Verification Result",
         description=f"{member.mention} have been verified successfully",
         color=0xFF5555,
         timestamp=datetime.datetime.now()
     )
+    await member.remove_roles(role2)
     await member.add_roles(role)
     await interaction.response.send_message(embed=embed)
 @bot.tree.command(name="unverify",description="Unverify A User")
