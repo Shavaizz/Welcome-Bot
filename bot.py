@@ -1,5 +1,6 @@
 import os
 import random
+import traceback
 from discord.ext.commands import Context
 import aiohttp
 import discord
@@ -16,6 +17,12 @@ determine_flip = [1, 0]
 now = datetime.datetime.now()
 formatted_date_time = now.strftime("%Y-%m-%d %H:%M:%S")
 bot = commands.Bot(command_prefix=".", intents=discord.Intents.all())
+@bot.event
+async def on_command_error(ctx,error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send(f"{ctx.author},You don't have perms!")
+    else :
+        print(traceback.format_exc())
 
 @bot.command()
 @commands.guild_only()
