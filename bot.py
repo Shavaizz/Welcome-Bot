@@ -69,6 +69,19 @@ async def on_message(message):
     elif messageContent == "this bot sucks":
         await message.channel.send("No, you do")
 @bot.command()
+@commands.has_permissions(manage_roles=True)
+async def verify(ctx, *,member:discord.Member):
+    role1 = discord.utils.get(member.guild.roles, name="Member")
+    role2 = discord.utils.get(member.guild.roles, name="Unverified Member")
+    await member.remove_roles(role2)
+    await member.add_roles(role1)
+    ctx.send(f"{member.mention} has been verified successfully")
+@bot.command()
+@commands.has_permissions(manage_roles=True)
+async def unverify(ctx,*, member:discord.Member):
+    await member.ban(reason=f"{member.mention} has been banned by Welcome Bot, He has been unverified")
+    await ctx.send(f"{member.mention} has been banned, he was unverified.")
+@bot.command()
 @commands.has_permissions(manage_messages=True)
 async def purge(ctx, *, amt):
     await ctx.channel.purge(limit=int(amt)+1)
@@ -97,30 +110,6 @@ async def coinflip(interaction: discord.Interaction) -> None:
         embed = discord.Embed(title="Coinflip | (Welcomer Bot)",
                                   description=f"{interaction.user.mention} Flipped coin, we got **Tails**!")
         await interaction.response.send_message(embed=embed)
-@bot.tree.command(name="verify",description="Verify A User")
-@app_commands.default_permissions(manage_roles=True)
-async def verify(interaction:discord.Interaction,member:discord.Member,):
-    role = discord.utils.get(member.guild.roles,name="Verified Member")
-    role2 = discord.utils.get(member.guild.roles,name="Unverified Member")
-    embed=discord.Embed(
-        title="Verification Result",
-        description=f"{member.mention} have been verified successfully",
-        color=0xFF5555,
-        timestamp=datetime.datetime.now()
-    )
-    await member.remove_roles(role2)
-    await member.add_roles(role)
-    await interaction.response.send_message(embed=embed)
-@bot.tree.command(name="unverify",description="Unverify A User")
-@app_commands.default_permissions(manage_roles=True,)
-async def unverify(interaction:discord.Interaction,member:discord.Member):
-    embed=discord.Embed(
-        title="Verification Result",
-        description=f"{member.mention} has been unverified and has been banned",
-        color=0XFF5555
-    )
-    await interaction.response.send_message(embed=embed)
-    await member.ban(reason="User has been unverified and been kicked by WelcomerBot")
 @bot.tree.command(name="pie",description='Throw a pie at someone')
 async def pie(interaction:discord.Interaction, member:discord.Member, message:str) -> None:
   embed= discord.Embed(title=f"User:{member.name} Has a pie for you 🥧",
