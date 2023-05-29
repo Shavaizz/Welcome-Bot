@@ -7,7 +7,6 @@ import discord
 from discord.ext import commands
 import datetime
 import asyncio
-from discord import app_commands
 from typing import Optional, Literal
 from discord.ext.commands import Greedy
 from dotenv import load_dotenv
@@ -80,9 +79,11 @@ async def on_message(message):
 async def verify(ctx, *,member:discord.Member):
     role1 = discord.utils.get(member.guild.roles, name="Member")
     role2 = discord.utils.get(member.guild.roles, name="Unverified Member")
+    channel = discord.utils.get(ctx.guild.channels, name="lounge")
+    await channel.send(f"Welcome {member.mention} to {ctx.guild.name}")
+    await ctx.send(f"{member.mention} has been verified")
     await member.remove_roles(role2)
     await member.add_roles(role1)
-    ctx.send(f"{member.mention} has been verified successfully")
 @bot.command()
 @commands.has_permissions(manage_roles=True)
 async def unverify(ctx,*, member:discord.Member):
