@@ -50,6 +50,7 @@ async def sync(
         else:
             ret += 1
     await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
+    
 @bot.listen()
 async def on_message(message):
     username = str(message.author)
@@ -70,6 +71,24 @@ async def on_message(message):
         await message.channel.send("What?")
     elif messageContent == "this bot sucks":
         await message.channel.send("No, you do")
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def female_verify(ctx,member:discord.Member):
+    Female_Verified_Role= discord.utils.get(member.guild.roles, name="Kudiyan Of Shanks\'s Crew")
+    if Female_Verified_Role in member.roles:
+        await ctx.send(f"Can't Verify {member.mention}, He is already a part of The Crew.")
+    else:
+        await member.add_roles(Female_Verified_Role)
+        await ctx.send(f"Verified {member.mention}, He is now a part of The Crew.")
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def verify(ctx, member:discord.Member):
+    Verified_Role = discord.utils.get(member.guild.roles, name="Shanks\'s Crew")
+    if Verified_Role in member.roles:
+        await ctx.send(f"Can't Verify {member.mention}, He is already a part of The Crew.")
+    else:
+        await member.add_roles(Verified_Role)
+        await ctx.send(f"Verified {member.mention}, He is now a part of The Crew.")
 @bot.command()
 @commands.has_permissions(manage_messages=True)
 async def purge(ctx, *, amt):
@@ -108,7 +127,7 @@ async def on_member_join(member: discord.Member):
         color=0xFF5555,
         timestamp=formatted_date_time
         )
-    role = discord.utils.get(member.guild.roles, name="Member")
+    role = discord.utils.get(member.guild.roles, name="Unverified Member")
     await member.add_roles(role)
     await channel.send(embed=embed)
     print(f"{role}role given to memeber{member.mention}")
