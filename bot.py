@@ -1,5 +1,6 @@
 import os
 import random
+import traceback
 from discord.ext.commands import Context
 import aiohttp
 import discord
@@ -10,14 +11,17 @@ from typing import Optional, Literal
 from discord.ext.commands import Greedy
 from dotenv import load_dotenv
 load_dotenv()
-
-TOKEN = os.getenv('TOKEN')
+TOKEN = os.environ['TOKEN']
 determine_flip = [1, 0]
 now = datetime.datetime.now()
 formatted_date_time = now.strftime("%Y-%m-%d %H:%M:%S")
-
-
 bot = commands.Bot(command_prefix=".", intents=discord.Intents.all())
+@bot.event
+async def on_command_error(ctx,error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send(f"{ctx.author},You don't have perms!")
+    else :
+        print(traceback.format_exc())
 
 @bot.command()
 @commands.guild_only()
@@ -72,6 +76,7 @@ async def on_message(message):
     elif messageContent == "this bot sucks":
         await message.channel.send("No, you do")
 @bot.command()
+
 @commands.has_permissions(administrator=True)
 async def female_verify(ctx,member:discord.Member):
     Female_Verified_Role= discord.utils.get(member.guild.roles, name="Kudiyan Of Shanks\'s Crew")
@@ -89,6 +94,20 @@ async def verify(ctx, member:discord.Member):
     else:
         await member.add_roles(Verified_Role)
         await ctx.send(f"Verified {member.mention}, He is now a part of The Crew.")
+@commands.has_permissions(manage_roles=True)
+async def verify(ctx, *,member:discord.Member):
+    role1 = discord.utils.get(member.guild.roles, name="Member")
+    role2 = discord.utils.get(member.guild.roles, name="Unverified Member")
+    channel = discord.utils.get(ctx.guild.channels, name="lounge")
+    await channel.send(f"Welcome {member.mention} to {ctx.guild.name}")
+    await ctx.send(f"{member.mention} has been verified")
+    await member.remove_roles(role2)
+    await member.add_roles(role1)
+@bot.command()
+@commands.has_permissions(manage_roles=True)
+async def unverify(ctx,*, member:discord.Member):
+    await member.ban(reason=f"{member.mention} has been banned by Welcome Bot, He has been unverified")
+    await ctx.send(f"{member.mention} has been banned, he was unverified.")
 @bot.command()
 @commands.has_permissions(manage_messages=True)
 async def purge(ctx, *, amt):
@@ -96,19 +115,19 @@ async def purge(ctx, *, amt):
     msg = await ctx.send(f"Purged, {amt} messages successfully")
     await asyncio.sleep(3)
     await msg.delete()
-@bot.tree.command(description='Makes a random dadjoke')
+@bot.tree.command(name="dadjoke",description='Makes a random dadjoke')
 async def dadjoke(interaction: discord.Interaction) -> None:
     async with aiohttp.ClientSession() as session:
         async with session.get("https://icanhazdadjoke.com", headers={"Accept": "application/json"}) as resp:
             data = await resp.json()
             await interaction.response.send_message(data["joke"])
-@bot.tree.command(description='Makes a random joke')
+@bot.tree.command(name="joke",description='Makes a random joke')
 async def joke(interaction: discord.Interaction) -> None:
     async with aiohttp.ClientSession() as session:
         async with session.get('https://official-joke-api.appspot.com/random_joke') as resp:
             data = await resp.json()
             await interaction.response.send_message(f"{data['setup']}\n\n{data['punchline']}")
-@bot.tree.command(description='Flips a coin to get either heads or tails')
+@bot.tree.command(name="coinflip",description='Flips a coin to get either heads or tails')
 async def coinflip(interaction: discord.Interaction) -> None:
     if random.choice(determine_flip) == 1:
         embed = discord.Embed(title="Coinflip | (Welcomer Bot)",
@@ -118,6 +137,13 @@ async def coinflip(interaction: discord.Interaction) -> None:
         embed = discord.Embed(title="Coinflip | (Welcomer Bot)",
                                   description=f"{interaction.user.mention} Flipped coin, we got **Tails**!")
         await interaction.response.send_message(embed=embed)
+@bot.tree.command(name="pie",description='Throw a pie at someone')
+async def pie(interaction:discord.Interaction, member:discord.Member, message:str) -> None:
+  embed= discord.Embed(title=f"User:{member.name} Has a pie for you 🥧",
+                    description=f'{member.mention} says {message}',
+                    color=0xFF5555
+                        )
+  await interaction.response.send_message(embed=embed)
 @bot.event
 async def on_member_join(member: discord.Member):
     channel = discord.utils.get(
@@ -125,7 +151,7 @@ async def on_member_join(member: discord.Member):
     embed = discord.Embed(
         description=f"Welcome To The Crew, {member.mention}",
         color=0xFF5555,
-        timestamp=formatted_date_time
+        timestamp=datetime.datetime.now(),
         )
     role = discord.utils.get(member.guild.roles, name="Unverified Member")
     await member.add_roles(role)
