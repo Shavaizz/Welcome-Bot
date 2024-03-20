@@ -15,10 +15,9 @@ TOKEN = os.getenv('TOKEN')
 determine_flip = [1, 0]
 now = datetime.datetime.now()
 formatted_date_time = now.strftime("%Y-%m-%d %H:%M:%S")
-
-
 bot = commands.Bot(command_prefix=".", intents=discord.Intents.all())
 
+#Events & Sync
 @bot.command()
 @commands.guild_only()
 @commands.is_owner()
@@ -50,7 +49,6 @@ async def sync(
         else:
             ret += 1
     await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
-    
 @bot.listen()
 async def on_message(message):
     username = str(message.author)
@@ -71,6 +69,21 @@ async def on_message(message):
         await message.channel.send("What?")
     elif messageContent == "this bot sucks":
         await message.channel.send("No, you do")
+@bot.event
+async def on_member_join(member: discord.Member):
+    channel = discord.utils.get(
+        member.guild.text_channels, name="welcome")
+    embed = discord.Embed(
+        description=f"Welcome To The Crew, {member.mention}",
+        color=0xFF5555,
+        timestamp=formatted_date_time
+        )
+    role = discord.utils.get(member.guild.roles, name="Unverified Member")
+    await member.add_roles(role)
+    await channel.send(embed=embed)
+    print(f"{role}role given to memeber{member.mention}")
+        
+#Verify Section
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def female_verify(ctx,member:discord.Member):
@@ -89,6 +102,8 @@ async def verify(ctx, member:discord.Member):
     else:
         await member.add_roles(Verified_Role)
         await ctx.send(f"Verified {member.mention}, He is now a part of The Crew.")
+
+#Moderation Commands
 @bot.command()
 @commands.has_permissions(manage_messages=True)
 async def purge(ctx, *, amt):
@@ -96,6 +111,22 @@ async def purge(ctx, *, amt):
     msg = await ctx.send(f"Purged, {amt} messages successfully")
     await asyncio.sleep(3)
     await msg.delete()
+#Prefix Commands
+@bot.command()
+@commands.has_permissions(mention_everyone=True)
+async def recall(ctx): #Pings anyone with the Game Role to be pinged when we start a game session
+    cod_role = discord.utils.get(ctx.guild.roles, name="Game Role")  
+    if cod_role is None:
+        await ctx.send("The 'Game Role' doesn't exist.")
+        return
+    target_channel = discord.utils.get(ctx.guild.channels, name="cod-pings")
+    if target_channel is None:
+        await ctx.send(f"The target channel doesn't exist.")
+        return
+    for member in ctx.guild.members:  
+        if cod_role in member.roles:
+            await target_channel.send(f"Ajao cod khel lo {member.mention}")
+#"/" Commands
 @bot.tree.command(description='Makes a random dadjoke')
 async def dadjoke(interaction: discord.Interaction) -> None:
     async with aiohttp.ClientSession() as session:
@@ -118,19 +149,8 @@ async def coinflip(interaction: discord.Interaction) -> None:
         embed = discord.Embed(title="Coinflip | (Welcomer Bot)",
                                   description=f"{interaction.user.mention} Flipped coin, we got **Tails**!")
         await interaction.response.send_message(embed=embed)
-@bot.event
-async def on_member_join(member: discord.Member):
-    channel = discord.utils.get(
-        member.guild.text_channels, name="welcome")
-    embed = discord.Embed(
-        description=f"Welcome To The Crew, {member.mention}",
-        color=0xFF5555,
-        timestamp=formatted_date_time
-        )
-    role = discord.utils.get(member.guild.roles, name="Unverified Member")
-    await member.add_roles(role)
-    await channel.send(embed=embed)
-    print(f"{role}role given to memeber{member.mention}")
+
+#Bot Start
 @bot.event
 async def on_ready():
     print(f"{bot.user} is now running")
