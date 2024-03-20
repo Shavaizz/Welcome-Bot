@@ -91,7 +91,6 @@ async def on_member_join(member: discord.Member):
         
 #Verify Section
 @bot.command()
-
 @commands.has_permissions(administrator=True)
 async def female_verify(ctx,member:discord.Member):
     Female_Verified_Role= discord.utils.get(member.guild.roles, name="Kudiyan Of Shanks\'s Crew")
