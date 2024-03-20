@@ -23,6 +23,7 @@ async def on_command_error(ctx,error):
     else :
         print(traceback.format_exc())
 
+#Events & Sync
 @bot.command()
 @commands.guild_only()
 @commands.is_owner()
@@ -54,7 +55,6 @@ async def sync(
         else:
             ret += 1
     await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
-    
 @bot.listen()
 async def on_message(message):
     username = str(message.author)
@@ -75,6 +75,21 @@ async def on_message(message):
         await message.channel.send("What?")
     elif messageContent == "this bot sucks":
         await message.channel.send("No, you do")
+@bot.event
+async def on_member_join(member: discord.Member):
+    channel = discord.utils.get(
+        member.guild.text_channels, name="welcome")
+    embed = discord.Embed(
+        description=f"Welcome To The Crew, {member.mention}",
+        color=0xFF5555,
+        timestamp=formatted_date_time
+        )
+    role = discord.utils.get(member.guild.roles, name="Unverified Member")
+    await member.add_roles(role)
+    await channel.send(embed=embed)
+    print(f"{role}role given to memeber{member.mention}")
+        
+#Verify Section
 @bot.command()
 
 @commands.has_permissions(administrator=True)
@@ -94,20 +109,8 @@ async def verify(ctx, member:discord.Member):
     else:
         await member.add_roles(Verified_Role)
         await ctx.send(f"Verified {member.mention}, He is now a part of The Crew.")
-@commands.has_permissions(manage_roles=True)
-async def verify(ctx, *,member:discord.Member):
-    role1 = discord.utils.get(member.guild.roles, name="Member")
-    role2 = discord.utils.get(member.guild.roles, name="Unverified Member")
-    channel = discord.utils.get(ctx.guild.channels, name="lounge")
-    await channel.send(f"Welcome {member.mention} to {ctx.guild.name}")
-    await ctx.send(f"{member.mention} has been verified")
-    await member.remove_roles(role2)
-    await member.add_roles(role1)
-@bot.command()
-@commands.has_permissions(manage_roles=True)
-async def unverify(ctx,*, member:discord.Member):
-    await member.ban(reason=f"{member.mention} has been banned by Welcome Bot, He has been unverified")
-    await ctx.send(f"{member.mention} has been banned, he was unverified.")
+
+#Moderation Commands
 @bot.command()
 @commands.has_permissions(manage_messages=True)
 async def purge(ctx, *, amt):
@@ -115,7 +118,23 @@ async def purge(ctx, *, amt):
     msg = await ctx.send(f"Purged, {amt} messages successfully")
     await asyncio.sleep(3)
     await msg.delete()
-@bot.tree.command(name="dadjoke",description='Makes a random dadjoke')
+#Prefix Commands
+@bot.command()
+@commands.has_permissions(mention_everyone=True)
+async def recall(ctx): #Pings anyone with the Game Role to be pinged when we start a game session
+    cod_role = discord.utils.get(ctx.guild.roles, name="Game Role")  
+    if cod_role is None:
+        await ctx.send("The 'Game Role' doesn't exist.")
+        return
+    target_channel = discord.utils.get(ctx.guild.channels, name="cod-pings")
+    if target_channel is None:
+        await ctx.send(f"The target channel doesn't exist.")
+        return
+    for member in ctx.guild.members:  
+        if cod_role in member.roles:
+            await target_channel.send(f"Ajao cod khel lo {member.mention}")
+#"/" Commands
+@bot.tree.command(description='Makes a random dadjoke')
 async def dadjoke(interaction: discord.Interaction) -> None:
     async with aiohttp.ClientSession() as session:
         async with session.get("https://icanhazdadjoke.com", headers={"Accept": "application/json"}) as resp:
@@ -144,19 +163,7 @@ async def pie(interaction:discord.Interaction, member:discord.Member, message:st
                     color=0xFF5555
                         )
   await interaction.response.send_message(embed=embed)
-@bot.event
-async def on_member_join(member: discord.Member):
-    channel = discord.utils.get(
-        member.guild.text_channels, name="welcome")
-    embed = discord.Embed(
-        description=f"Welcome To The Crew, {member.mention}",
-        color=0xFF5555,
-        timestamp=datetime.datetime.now(),
-        )
-    role = discord.utils.get(member.guild.roles, name="Unverified Member")
-    await member.add_roles(role)
-    await channel.send(embed=embed)
-    print(f"{role}role given to memeber{member.mention}")
+#Bot Start
 @bot.event
 async def on_ready():
     print(f"{bot.user} is now running")
