@@ -91,7 +91,6 @@ async def on_member_join(member: discord.Member):
         
 #Verify Section
 @bot.command()
-
 @commands.has_permissions(administrator=True)
 async def female_verify(ctx,member:discord.Member):
     Female_Verified_Role= discord.utils.get(member.guild.roles, name="Kudiyan Of Shanks\'s Crew")
@@ -157,9 +156,9 @@ async def coinflip(interaction: discord.Interaction) -> None:
                                   description=f"{interaction.user.mention} Flipped coin, we got **Tails**!")
         await interaction.response.send_message(embed=embed)
 @bot.tree.command(name="pie",description='Throw a pie at someone')
-async def pie(interaction:discord.Interaction, member:discord.Member, message:str) -> None:
-  embed= discord.Embed(title=f"User:{member.name} Has a pie for you 🥧",
-                    description=f'{member.mention} says {message}',
+async def pie(interaction:discord.Interaction,member:discord.Member, message:str) -> None:
+  embed= discord.Embed(title=f"User:{interaction.user.name} Has a pie for you 🥧{member.mention}",
+                    description=f'{interaction.user.mention} says {message}',
                     color=0xFF5555
                         )
   await interaction.response.send_message(embed=embed)
