@@ -67,14 +67,14 @@ async def on_message(message):
     if message.author == bot.user:
         return
     messageContent = message.content.lower()
-    if messageContent == "hello":
-        await message.channel.send("Hi,How are you?")
-    elif messageContent == "oye":
-        await message.channel.send("Han Oye")
-    elif messageContent == "bruh":
-        await message.channel.send("What?")
-    elif messageContent == "this bot sucks":
-        await message.channel.send("No, you do")
+    if messageContent == "resp 1":
+        await message.channel.send("resp 1")
+    elif messageContent == "resp 2":
+        await message.channel.send("resp 2")
+    elif messageContent == "resp 3":
+        await message.channel.send("resp 3")
+    elif messageContent == "resp 4":
+        await message.channel.send("resp 4")
 @bot.event
 async def on_member_join(member: discord.Member):
     channel = discord.utils.get(
@@ -93,16 +93,16 @@ async def on_member_join(member: discord.Member):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def female_verify(ctx,member:discord.Member):
-    Female_Verified_Role= discord.utils.get(member.guild.roles, name="Kudiyan Of Shanks\'s Crew")
+    Female_Verified_Role= discord.utils.get(member.guild.roles, name="femalerole_goeshere")
     if Female_Verified_Role in member.roles:
-        await ctx.send(f"Can't Verify {member.mention}, He is already a part of The Crew.")
+        await ctx.send(f"Can't Verify {member.mention}, SHe is already a part of The Crew.")
     else:
         await member.add_roles(Female_Verified_Role)
         await ctx.send(f"Verified {member.mention}, He is now a part of The Crew.")
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def verify(ctx, member:discord.Member):
-    Verified_Role = discord.utils.get(member.guild.roles, name="Shanks\'s Crew")
+    Verified_Role = discord.utils.get(member.guild.roles, name="Crew Name")
     if Verified_Role in member.roles:
         await ctx.send(f"Can't Verify {member.mention}, He is already a part of The Crew.")
     else:
