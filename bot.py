@@ -95,10 +95,10 @@ async def on_member_join(member: discord.Member):
 async def female_verify(ctx,member:discord.Member):
     Female_Verified_Role= discord.utils.get(member.guild.roles, name="femalerole_goeshere")
     if Female_Verified_Role in member.roles:
-        await ctx.send(f"Can't Verify {member.mention}, SHe is already a part of The Crew.")
+        await ctx.send(f"Can't Verify {member.mention}, She is already a part of The Crew.")
     else:
         await member.add_roles(Female_Verified_Role)
-        await ctx.send(f"Verified {member.mention}, He is now a part of The Crew.")
+        await ctx.send(f"Verified {member.mention}, She is now a part of The Crew.")
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def verify(ctx, member:discord.Member):
